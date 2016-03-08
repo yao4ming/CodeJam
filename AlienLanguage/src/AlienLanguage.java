@@ -26,6 +26,7 @@ public class AlienLanguage{
             for (int i = 0, testCase = 1; i < N; i++, testCase++) {
 
                 int found = 0;
+				//replace () with [] and use as regex to match known words
                 String pattern = in.nextLine().replaceAll(Pattern.quote("("), "[").replaceAll(Pattern.quote(")"), "]");
 
                 for (int j = 0; j < D; j++) {
