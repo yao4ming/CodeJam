@@ -124,6 +124,24 @@ public class AlwaysTurnLeft {
         }
     }
 
+    public static void printMaze(PrintWriter writer, int caseNum) {
+        if (caseNum > 1) writer.println();
+        writer.println("Case #" + caseNum + ":");
+        String prevRow = "";
+        for (Map.Entry<String, Integer> cell : cells.entrySet()) {
+
+            //print new row
+            if (!prevRow.equals("") && !cell.getKey().split("&")[0].equals(prevRow)) {
+                writer.println();
+            }
+
+            prevRow = cell.getKey().split("&")[0];
+
+            String value = Integer.toHexString(cell.getValue());
+            writer.print(value);
+        }
+    }
+
     public static void main(String[] args) {
 
         File file = new File("B-small-practice.in");
@@ -147,20 +165,7 @@ public class AlwaysTurnLeft {
 
                 traverseMaze(fromFinish);
 
-                writer.println("Case #" + (i+1) + ":");
-                String prevRow = "";
-                for (Map.Entry<String, Integer> cell : cells.entrySet()) {
-
-                    if (!prevRow.equals("") && !cell.getKey().split("&")[0].equals(prevRow)) {
-                        writer.println();
-                    }
-
-                    prevRow = cell.getKey().split("&")[0];
-
-                    String value = Integer.toHexString(cell.getValue());
-                    writer.print(value);
-                }
-                if (i != testCases - 1) writer.println();
+                printMaze(writer, i+1);
                 cells.clear();
             }
 
