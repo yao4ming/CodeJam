@@ -6,32 +6,28 @@ import java.util.*;
  */
 public class AlwaysTurnLeft {
 
-    static int row, col, maxRow, maxCol, minRow, minCol;
+    static int row, col;
 
-    static SortedMap<String, Integer> cells = new TreeMap<>(new Comparator<String>() {
-        @Override
-        public int compare(String s1, String s2) {
-            char row = s1.charAt(0);
-            char col = s1.charAt(1);
-            char row2 = s1.charAt(0);
-            char col2 = s1.charAt(1);
+    static SortedMap<String, Integer> cells = new TreeMap<>((Comparator<String>) (pos1, pos2) -> {
+        int pos1Row = Integer.parseInt(pos1.split("&")[0]);
+        int pos1Col = Integer.parseInt(pos1.split("&")[1]);
+        int pos2Row = Integer.parseInt(pos2.split("&")[0]);
+        int pos2Col = Integer.parseInt(pos2.split("&")[1]);
 
-            if (row > row2) {
+        if (pos1Row < pos2Row) {
+            return 1;
+        } else if (pos1Row == pos2Row){
+            if (pos1Col > pos2Col) {
                 return 1;
-            } else if (row == row2){
-                if (col < col2) {
-                    return 1;
-                }
-                else if (col == col2) {
-                    return 0;
-                }
-                else {
-                    return -1;
-                }
-            } else {
+            }
+            else if (pos1Col == pos2Col) {
+                return 0;
+            }
+            else {
                 return -1;
             }
-
+        } else {
+            return -1;
         }
     });
 
@@ -40,32 +36,20 @@ public class AlwaysTurnLeft {
     public enum Direction {
         NORTH(1), SOUTH(2), WEST(4), EAST(8);
 
-        int val;
         Direction(int val) {
             this.val = val;
         }
 
+        int val;
         public int getVal() {return val;}
 
-    }
-
-    public static class Cell {
-        public int row;
-        public int col;
-        public int val;
-
-        public Cell(int row, int col, int val) {
-            this.row = row;
-            this.col = col;
-            this.val = val;
-        }
     }
 
     public static void storeCellInfo(String pos, int hex) {
         if (cells.containsKey(pos)) {
             hex = cells.get(pos) & hex;
             cells.put(pos, hex);
-            System.out.println("new hex " + hex);
+            //System.out.println("new hex " + hex);
         } else {
             cells.put(pos, hex);
         }
@@ -113,19 +97,12 @@ public class AlwaysTurnLeft {
                     //store cell info (unless prevMove was left, wall on left)
                     if (prevMove != 'L') {
                         int hex = 15 - (turnLeft(dir).getVal());
-                        String pos = "" + row + col;
-                        System.out.println(pos + " " + hex);
-
+                        String pos = row + "&" + col;
+                        //System.out.println(pos + " " + hex);
                         storeCellInfo(pos, hex);
                     }
 
                     move(dir);
-
-                    //update maze info
-                    maxRow = (maxRow > row ? maxRow : row);
-                    maxCol = (maxCol > col ? maxCol : col);
-                    minRow = (minRow < row ? minRow : row);
-                    minCol = (minCol < col ? minCol : col);
                     break;
                 }
                 case 'L': {
@@ -135,8 +112,8 @@ public class AlwaysTurnLeft {
                 case 'R': {
                     //store cell info (wall in front and left)
                     int hex = 15 - (dir.getVal() | turnLeft(dir).getVal());
-                    String pos = "" + row + col;
-                    System.out.println(pos + " " + hex);
+                    String pos = row + "&" + col;
+                    //System.out.println(pos + " " + hex);
                     storeCellInfo(pos, hex);
 
                     dir = turnRight(dir);
@@ -149,8 +126,8 @@ public class AlwaysTurnLeft {
 
     public static void main(String[] args) {
 
-        File file = new File("input.txt");
-        try (Scanner in = new Scanner(file)) {
+        File file = new File("B-small-practice.in");
+        try (Scanner in = new Scanner(file); PrintWriter writer = new PrintWriter("output.txt")) {
             int testCases = Integer.parseInt(in.nextLine());
 
             for (int i = 0; i < testCases; i++) {
@@ -160,7 +137,7 @@ public class AlwaysTurnLeft {
                 String fromStart = line.split(" ")[0];
                 String fromFinish = line.split(" ")[1];
 
-                row = 0; col = 0; maxRow = 0; maxCol = 0; minRow = 0; minCol = 0;
+                row = 0; col = 0;
 
                 traverseMaze(fromStart);
 
@@ -170,15 +147,21 @@ public class AlwaysTurnLeft {
 
                 traverseMaze(fromFinish);
 
-                int numRows = maxRow-minRow;
-                int numCols = maxCol-minCol;
-                int[][] maze = new int[numRows][numCols];
+                writer.println("Case #" + (i+1) + ":");
+                String prevRow = "";
+                for (Map.Entry<String, Integer> cell : cells.entrySet()) {
 
-                Set<String> keys = cells.keySet();
-                for (String key : keys) {
-                    System.out.println(key + " ==> "+ cells.get(key));
+                    if (!prevRow.equals("") && !cell.getKey().split("&")[0].equals(prevRow)) {
+                        writer.println();
+                    }
+
+                    prevRow = cell.getKey().split("&")[0];
+
+                    String value = Integer.toHexString(cell.getValue());
+                    writer.print(value);
                 }
-
+                if (i != testCases - 1) writer.println();
+                cells.clear();
             }
 
         } catch (FileNotFoundException e) {
