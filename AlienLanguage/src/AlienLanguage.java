@@ -8,8 +8,8 @@ public class AlienLanguage{
 
     public static void main(String []args) {
 
-        File file = new File("input.in");
-        try (Scanner in = new Scanner(file); PrintWriter writer = new PrintWriter("output.txt", "utf-8")) {
+        File file = new File("A-small-practice.in");
+        try (Scanner in = new Scanner(file); PrintWriter writer = new PrintWriter("A-small-practice.out")) {
 
             int L = in.nextInt();
             int D = in.nextInt();
@@ -26,18 +26,15 @@ public class AlienLanguage{
             for (int i = 0, testCase = 1; i < N; i++, testCase++) {
 
                 int found = 0;
+
 				//replace () with [] and use as regex to match known words
                 String pattern = in.nextLine().replaceAll(Pattern.quote("("), "[").replaceAll(Pattern.quote(")"), "]");
 
                 for (int j = 0; j < D; j++) {
-                    if (words[j].matches(pattern)) {
-                        found++;
-                    }
+                    if (words[j].matches(pattern)) found++;
                 }
                 writer.println("Case #" + testCase + ": " + found);
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
