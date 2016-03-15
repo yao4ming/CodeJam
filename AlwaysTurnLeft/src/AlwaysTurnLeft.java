@@ -8,28 +8,7 @@ public class AlwaysTurnLeft {
 
     static int row, col, maxRow, maxCol, minRow, minCol;
 
-    static SortedMap<String, Integer> cells = new TreeMap<>((Comparator<String>) (pos1, pos2) -> {
-        int pos1Row = Integer.parseInt(pos1.split("&")[0]);
-        int pos1Col = Integer.parseInt(pos1.split("&")[1]);
-        int pos2Row = Integer.parseInt(pos2.split("&")[0]);
-        int pos2Col = Integer.parseInt(pos2.split("&")[1]);
-
-        if (pos1Row < pos2Row) {
-            return 1;
-        } else if (pos1Row == pos2Row){
-            if (pos1Col > pos2Col) {
-                return 1;
-            }
-            else if (pos1Col == pos2Col) {
-                return 0;
-            }
-            else {
-                return -1;
-            }
-        } else {
-            return -1;
-        }
-    });
+    static Map<String, Integer> cells = new HashMap<>();
 
     static Direction dir;
 
@@ -139,8 +118,8 @@ public class AlwaysTurnLeft {
 
     public static void main(String[] args) {
 
-        File file = new File("B-small-practice.in");
-        try (Scanner in = new Scanner(file); PrintWriter writer = new PrintWriter("B-small-practice.out")) {
+        File file = new File("B-large-practice.in");
+        try (Scanner in = new Scanner(file); PrintWriter writer = new PrintWriter("B-large-practice.out")) {
             int testCases = Integer.parseInt(in.nextLine());
 
             for (int i = 0; i < testCases; i++) {
