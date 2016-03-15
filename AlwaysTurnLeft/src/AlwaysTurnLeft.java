@@ -84,15 +84,14 @@ public class AlwaysTurnLeft {
     }
 
     public static void traverseMaze(String moves) {
+        //first move is always W
         char prevMove = 'W';
-
         for (int i = 1; i < moves.length(); i++) {
-
             char move = moves.charAt(i);
             String pos = row + "&" + col;
             switch (move) {
                 case 'W': {
-                    //store cell info (able to move forward, backwards, rightwards)
+                    //store cell info (able to move forward, backwards, rightwards) using bitwise OR
                     if (prevMove != 'L') {
                         int hex = dir.getVal() | turnRight(turnRight(dir)).getVal() | turnRight(dir).getVal();
                         storeCellInfo(pos, hex);
@@ -112,7 +111,7 @@ public class AlwaysTurnLeft {
                     break;
                 }
                 case 'R': {
-                    //store cell info (able to move backwards and rightwards)
+                    //store cell info (able to move backwards and rightwards) using bitwise OR
                     int hex = turnRight(turnRight(dir)).getVal() | turnRight(dir).getVal();
                     storeCellInfo(pos, hex);
                     dir = turnRight(dir);
@@ -125,15 +124,14 @@ public class AlwaysTurnLeft {
 
     public static void printMaze(PrintWriter writer, int caseNum) {
         writer.println("Case #" + caseNum + ":");
+
+        //print maze from top-left
         for (int i = maxRow; i >= minRow; i--) {
             for (int j = minCol; j <= maxCol; j++) {
                 String key = i + "&" + j;
-                if (!cells.containsKey(key)) {
-                    writer.print("f");
-                } else {
-                    writer.print(Integer.toHexString(cells.get(key)));
-                }
-
+                //only room without key is f
+                if (!cells.containsKey(key)) writer.print("f");
+                else writer.print(Integer.toHexString(cells.get(key)));
             }
             writer.println();
         }
