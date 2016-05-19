@@ -1,28 +1,16 @@
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
-/**
- * Created by yaoming on 3/8/16.
- */
 public class AlwaysTurnLeft {
+
+    static Maze maze;
 
     static int row, col, maxRow, maxCol, minRow, minCol;
 
     static Map<String, Integer> cells = new HashMap<>();
 
     static Direction dir;
-
-    public enum Direction {
-        NORTH(1), SOUTH(2), WEST(4), EAST(8);
-
-        Direction(int val) {
-            this.val = val;
-        }
-
-        int val;
-        public int getVal() {return val;}
-
-    }
 
     public static void storeCellInfo(String pos, int hex) {
         if (cells.containsKey(pos)) {
@@ -63,6 +51,7 @@ public class AlwaysTurnLeft {
     }
 
     public static void traverseMaze(String moves) {
+
         //first move is always W
         char prevMove = 'W';
         for (int i = 1; i < moves.length(); i++) {
@@ -116,10 +105,41 @@ public class AlwaysTurnLeft {
         }
     }
 
+    public static void drawMaze() {
+        int height = maxRow-minRow+1;
+        int width = maxCol-minCol+1;
+        maze = new Maze(height, width);
+        JFrame frame = new JFrame("AlwaysTurnLeft");
+        frame.add(maze);
+        frame.setSize(width*100, height*100);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        frame.setResizable(false);
+
+        for (int i = maxRow; i >= minRow; i--) {
+            for (int j = minCol; j <= maxCol; j++) {
+                String key = i + "&" + j;
+                if (cells.get(key) != null) {
+                    maze.drawCell(-i, j-minCol, cells.get(key));
+                } else {
+                    maze.drawCell(-i, j-minCol, 15);
+                }
+            }
+        }
+
+        try {
+            Thread.sleep(3000);
+            frame.dispose();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
+
     public static void main(String[] args) {
 
-        File file = new File("B-large-practice.in");
-        try (Scanner in = new Scanner(file); PrintWriter writer = new PrintWriter("B-large-practice.out")) {
+        File file = new File("input.in");
+        try (Scanner in = new Scanner(file); PrintWriter writer = new PrintWriter("output.out")) {
             int testCases = Integer.parseInt(in.nextLine());
 
             for (int i = 0; i < testCases; i++) {
@@ -129,7 +149,7 @@ public class AlwaysTurnLeft {
                 String fromStart = line.split(" ")[0];
                 String fromFinish = line.split(" ")[1];
 
-                //start at 0,0 facing south
+                //start at 0,0 facing southWall
                 row = 0; col = 0; maxRow = 0; maxCol = 0; minRow = 0; minCol = 0;
                 dir = Direction.SOUTH;
                 traverseMaze(fromStart);
@@ -140,6 +160,8 @@ public class AlwaysTurnLeft {
                 traverseMaze(fromFinish);
 
                 printMaze(writer, i+1);
+                drawMaze();
+
                 cells.clear();
             }
 
